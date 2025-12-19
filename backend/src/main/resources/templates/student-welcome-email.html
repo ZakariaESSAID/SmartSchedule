@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Bienvenue sur SmartSchedule</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+<body style="font-family: Arial, sans-serif;">
+    <h2>Bienvenue sur SmartSchedule, <span th:text="${name}"></span>!</h2>
+    <p>Votre compte étudiant a été créé avec succès.</p>
+    <p>Voici vos identifiants de connexion :</p>
+    <ul>
+        <li><strong>Email :</strong> <span th:text="${email}"></span></li>
+        <li><strong>Mot de passe :</strong> <span th:text="${password}"></span></li>
+    </ul>
+    <p>Vous pouvez maintenant vous connecter pour consulter votre emploi du temps.</p>
+    <p>Cordialement,<br/>L'équipe SmartSchedule</p>
+</body>
+</html>
