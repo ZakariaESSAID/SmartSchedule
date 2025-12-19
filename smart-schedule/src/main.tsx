@@ -19,7 +19,10 @@ import CoursesPage from './app/(main)/courses/page'
 import StudentsPage from './app/(main)/students/page'
 import StudentDetailPage from './app/(main)/students/[id]/page'
 import TeachersPage from './app/(main)/teachers/page'
-import StructurePage from './app/(main)/structure/page' // Import de la nouvelle page
+import TeacherAvailabilityPage from './app/(main)/teachers/[id]/availability/page'
+import StructurePage from './app/(main)/structure/page'
+import GenerationPage from './app/(main)/generation/page'
+import PublicationPage from './app/(main)/publication/page' // Nouvelle page
 import UnauthorizedPage from './app/(main)/unauthorized/page'
 import ScheduleEventsPage from './app/(main)/schedule-events/page'
 import './app/globals.css'
@@ -49,8 +52,11 @@ const router = createBrowserRouter([
       { path: 'students', element: <StudentsPage /> },
       { path: 'students/:id', element: <StudentDetailPage /> },
       { path: 'teachers', element: <TeachersPage /> },
+      { path: 'teachers/:id/availability', element: <TeacherAvailabilityPage /> },
       { path: 'schedule-events', element: <ScheduleEventsPage /> },
-      { path: 'structure', element: <StructurePage /> }, // Nouvelle route
+      { path: 'structure', element: <StructurePage /> },
+      { path: 'generation', element: <GenerationPage /> },
+      { path: 'publication', element: <PublicationPage /> }, // Nouvelle route
       { path: 'unauthorized', element: <UnauthorizedPage /> },
     ],
   },

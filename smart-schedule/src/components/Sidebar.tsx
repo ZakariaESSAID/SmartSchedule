@@ -82,11 +82,21 @@ const Sidebar = () => {
                 </NavLink>
               </li>
               <li className="pt-4 mt-4 border-t border-gray-700">
-                <h3 className="px-3 text-xs font-semibold text-gray-400 uppercase tracking-wider">Structure</h3>
+                <h3 className="px-3 text-xs font-semibold text-gray-400 uppercase tracking-wider">Administration</h3>
               </li>
               <li>
                 <NavLink to="/structure" className={({ isActive }) => `${baseLinkClasses} ${isActive ? activeLinkClasses : ''}`}>
                   <span className="mr-3">🏛️</span> Gérer la Structure
+                </NavLink>
+              </li>
+              <li>
+                <NavLink to="/generation" className={({ isActive }) => `${baseLinkClasses} ${isActive ? activeLinkClasses : ''}`}>
+                  <span className="mr-3">⚙️</span> Génération EDT
+                </NavLink>
+              </li>
+              <li>
+                <NavLink to="/publication" className={({ isActive }) => `${baseLinkClasses} ${isActive ? activeLinkClasses : ''}`}>
+                  <span className="mr-3">🚀</span> Publication
                 </NavLink>
               </li>
             </>

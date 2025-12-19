@@ -2,11 +2,11 @@
 
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { jwtDecode } from 'jwt-decode'
+import { FaTrash, FaPlus } from 'react-icons/fa'
 
 const getAuthToken = () => (typeof window !== 'undefined' ? localStorage.getItem('token') : null);
 
-// Hook générique pour gérer une ressource (CRUD simple)
+// Hook générique pour gérer une ressource
 const useResource = (resourceName: string) => {
   const [items, setItems] = useState<{ id: string, name: string }[]>([]);
   const [loading, setLoading] = useState(true);
@@ -35,7 +35,7 @@ const useResource = (resourceName: string) => {
 
   useEffect(() => {
     fetchData();
-  }, [navigate]);
+  }, [navigate, resourceName]);
 
   const addItem = async (name: string) => {
     try {
@@ -70,8 +70,8 @@ const useResource = (resourceName: string) => {
   return { items, addItem, deleteItem, loading, error };
 };
 
-// Composant pour une carte de gestion
-const ManagementCard = ({ title, resourceName }) => {
+// Composant pour une carte de gestion (maintenant utilisé dans chaque onglet)
+const ManagementCard = ({ title, resourceName, placeholder }) => {
   const { items, addItem, deleteItem, loading, error } = useResource(resourceName);
   const [newItemName, setNewItemName] = useState('');
 
@@ -84,25 +84,28 @@ const ManagementCard = ({ title, resourceName }) => {
   };
 
   return (
-    <div className="bg-white p-4 rounded-lg shadow">
-      <h2 className="text-xl font-bold mb-4">{title}</h2>
+    <div>
       <form onSubmit={handleSubmit} className="flex items-center space-x-2 mb-4">
         <input 
           type="text" 
           value={newItemName} 
           onChange={(e) => setNewItemName(e.target.value)} 
-          placeholder={`Nouveau ${title.slice(0, -1)}...`} 
-          className="flex-grow p-2 border rounded"
+          placeholder={placeholder} 
+          className="flex-grow p-2 border border-gray-300 rounded-md"
         />
-        <button type="submit" className="px-4 py-2 bg-blue-600 text-white rounded-lg">Ajouter</button>
+        <button type="submit" className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
+          <FaPlus className="mr-2" /> Ajouter
+        </button>
       </form>
       {loading && <p>Chargement...</p>}
       {error && <p className="text-red-500">{error}</p>}
-      <ul className="space-y-2 max-h-60 overflow-y-auto">
+      <ul className="space-y-2">
         {items.map(item => (
-          <li key={item.id} className="flex justify-between items-center p-2 bg-gray-50 rounded">
-            <span>{item.name}</span>
-            <button onClick={() => deleteItem(item.id)} className="text-red-500 hover:text-red-700">Supprimer</button>
+          <li key={item.id} className="flex justify-between items-center p-3 bg-gray-100 rounded-md">
+            <span className="text-gray-800">{item.name}</span>
+            <button onClick={() => deleteItem(item.id)} className="text-gray-500 hover:text-red-600">
+              <FaTrash />
+            </button>
           </li>
         ))}
       </ul>
@@ -111,17 +114,48 @@ const ManagementCard = ({ title, resourceName }) => {
 };
 
 const StructurePage = () => {
+  const [activeTab, setActiveTab] = useState('campus');
+
+  const tabs = [
+    { id: 'campus', label: 'Campus', resource: 'campuses', placeholder: 'Nom du campus...' },
+    { id: 'filieres', label: 'Filières', resource: 'filieres', placeholder: 'Nom de la filière...' },
+    { id: 'departements', label: 'Départements', resource: 'departements', placeholder: 'Nom du département...' },
+    { id: 'niveaux', label: 'Niveaux', resource: 'niveaux', placeholder: 'Nom du niveau...' },
+    { id: 'groupes', label: 'Groupes', resource: 'groupes', placeholder: 'Nom du groupe...' },
+    { id: 'annees', label: 'Années Universitaires', resource: 'annees-universitaires', placeholder: 'Ex: 2023-2024...' },
+    { id: 'semestres', label: 'Semestres', resource: 'semestres', placeholder: 'Ex: Semestre 1...' },
+  ];
+
+  const activeTabData = tabs.find(tab => tab.id === activeTab);
+
   return (
-    <div className="p-6">
-      <h1 className="text-3xl font-bold mb-6">Gestion de la Structure Universitaire</h1>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <ManagementCard title="Campus" resourceName="campuses" />
-        <ManagementCard title="Filières" resourceName="filieres" />
-        <ManagementCard title="Départements" resourceName="departements" />
-        <ManagementCard title="Niveaux" resourceName="niveaux" />
-        <ManagementCard title="Groupes" resourceName="groupes" />
-        <ManagementCard title="Années Universitaires" resourceName="annees-universitaires" />
-        <ManagementCard title="Semestres" resourceName="semestres" />
+    <div className="p-6 bg-gray-50 min-h-screen">
+      <h1 className="text-3xl font-bold text-gray-800 mb-6">Gestion de la Structure Universitaire</h1>
+
+      <div className="flex border-b border-gray-200 mb-6">
+        {tabs.map(tab => (
+          <button
+            key={tab.id}
+            onClick={() => setActiveTab(tab.id)}
+            className={`px-4 py-2 text-sm font-medium ${
+              activeTab === tab.id
+                ? 'border-b-2 border-blue-600 text-blue-600'
+                : 'text-gray-500 hover:text-gray-700'
+            }`}
+          >
+            {tab.label}
+          </button>
+        ))}
+      </div>
+
+      <div className="bg-white p-6 rounded-lg shadow-md">
+        {activeTabData && (
+          <ManagementCard 
+            title={activeTabData.label} 
+            resourceName={activeTabData.resource} 
+            placeholder={activeTabData.placeholder}
+          />
+        )}
       </div>
     </div>
   );

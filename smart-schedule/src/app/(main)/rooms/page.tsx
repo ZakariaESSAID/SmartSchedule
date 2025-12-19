@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { Room } from '@/types'
 import { useNavigate } from 'react-router-dom'
 import { jwtDecode } from 'jwt-decode'
+import { FaEdit, FaTrash, FaPlus, FaVideo, FaDesktop, FaChalkboardTeacher, FaWifi } from 'react-icons/fa'
 
 const getAuthToken = () => (typeof window !== 'undefined' ? localStorage.getItem('token') : null);
 
@@ -15,15 +16,14 @@ const useIsAdmin = () => {
       try {
         const decoded: { roles: string[] } = jwtDecode(token);
         setIsAdmin(decoded.roles.includes('ROLE_ADMIN'));
-      } catch (e) {
-        setIsAdmin(false);
-      }
+      } catch (e) { setIsAdmin(false); }
     }
   }, []);
   return isAdmin;
 };
 
-const RoomFormModal = ({ room, onClose, onSave, campuses }) => { // Ajout de campuses en prop
+// ... (Les composants Modaux restent les mêmes pour l'instant)
+const RoomFormModal = ({ room, onClose, onSave, campuses }) => {
   const [formData, setFormData] = useState(room || {
     name: '', capacity: 0, campus: '', type: 'TD', building: '', floor: '',
     hasProjector: false, hasComputers: false, hasInteractiveBoard: false, hasInternet: false,
@@ -42,29 +42,27 @@ const RoomFormModal = ({ room, onClose, onSave, campuses }) => { // Ajout de cam
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-      <div className="bg-white p-6 rounded-lg w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-        <h2 className="text-xl font-bold mb-4">{room ? 'Modifier' : 'Ajouter'} une Salle</h2>
-        <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="bg-white p-6 rounded-lg w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-xl">
+        <h2 className="text-2xl font-bold mb-6 text-gray-800">{room ? 'Modifier' : 'Ajouter'} une Salle</h2>
+        <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Colonne 1 */}
           <div className="space-y-4">
-            <input name="name" value={formData.name} onChange={handleChange} placeholder="Nom / Code" className="w-full p-2 border rounded" required />
-            <input type="number" name="capacity" value={formData.capacity} onChange={handleChange} placeholder="Capacité" className="w-full p-2 border rounded" required />
-            
-            {/* Remplacement du champ de texte par une liste déroulante */}
-            <select name="campus" value={formData.campus} onChange={handleChange} className="w-full p-2 border rounded">
+            <h3 className="text-lg font-semibold text-gray-700">Informations Générales</h3>
+            <input name="name" value={formData.name} onChange={handleChange} placeholder="Nom / Code" className="w-full p-2 border rounded-md" required />
+            <input type="number" name="capacity" value={formData.capacity} onChange={handleChange} placeholder="Capacité" className="w-full p-2 border rounded-md" required />
+            <select name="campus" value={formData.campus} onChange={handleChange} className="w-full p-2 border rounded-md">
               <option value="">-- Sélectionner un Campus --</option>
               {campuses.map(c => <option key={c.id} value={c.name}>{c.name}</option>)}
             </select>
-
-            <select name="type" value={formData.type} onChange={handleChange} className="w-full p-2 border rounded">
+            <select name="type" value={formData.type} onChange={handleChange} className="w-full p-2 border rounded-md">
               <option value="AMPHI">Amphi</option>
               <option value="TD">Salle TD</option>
               <option value="TP">Salle TP / Labo</option>
               <option value="MEETING">Réunion</option>
             </select>
-            <input name="building" value={formData.building} onChange={handleChange} placeholder="Bâtiment" className="w-full p-2 border rounded" />
-            <input name="floor" value={formData.floor} onChange={handleChange} placeholder="Étage" className="w-full p-2 border rounded" />
-             <select name="status" value={formData.status} onChange={handleChange} className="w-full p-2 border rounded">
+            <input name="building" value={formData.building} onChange={handleChange} placeholder="Bâtiment" className="w-full p-2 border rounded-md" />
+            <input name="floor" value={formData.floor} onChange={handleChange} placeholder="Étage" className="w-full p-2 border rounded-md" />
+             <select name="status" value={formData.status} onChange={handleChange} className="w-full p-2 border rounded-md">
               <option value="AVAILABLE">Disponible</option>
               <option value="OCCUPIED">Occupée</option>
               <option value="MAINTENANCE">En maintenance</option>
@@ -72,17 +70,19 @@ const RoomFormModal = ({ room, onClose, onSave, campuses }) => { // Ajout de cam
             </select>
           </div>
           {/* Colonne 2 */}
-          <div className="space-y-2">
-            <h3 className="font-semibold">Équipements</h3>
-            <div className="flex items-center"><input type="checkbox" name="hasProjector" checked={formData.hasProjector} onChange={handleChange} className="mr-2" /> Vidéoprojecteur</div>
-            <div className="flex items-center"><input type="checkbox" name="hasComputers" checked={formData.hasComputers} onChange={handleChange} className="mr-2" /> Ordinateurs</div>
-            <div className="flex items-center"><input type="checkbox" name="hasInteractiveBoard" checked={formData.hasInteractiveBoard} onChange={handleChange} className="mr-2" /> Tableau interactif</div>
-            <div className="flex items-center"><input type="checkbox" name="hasInternet" checked={formData.hasInternet} onChange={handleChange} className="mr-2" /> Connexion Internet</div>
-            <textarea name="specificEquipment" value={formData.specificEquipment} onChange={handleChange} placeholder="Matériel spécifique (ex: Oscilloscope, Paillasse...)" className="w-full p-2 border rounded mt-2" />
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold text-gray-700">Équipements</h3>
+            <div className="space-y-2">
+                <label className="flex items-center"><input type="checkbox" name="hasProjector" checked={formData.hasProjector} onChange={handleChange} className="h-4 w-4 rounded" /> <span className="ml-2">Vidéoprojecteur</span></label>
+                <label className="flex items-center"><input type="checkbox" name="hasComputers" checked={formData.hasComputers} onChange={handleChange} className="h-4 w-4 rounded" /> <span className="ml-2">Ordinateurs</span></label>
+                <label className="flex items-center"><input type="checkbox" name="hasInteractiveBoard" checked={formData.hasInteractiveBoard} onChange={handleChange} className="h-4 w-4 rounded" /> <span className="ml-2">Tableau interactif</span></label>
+                <label className="flex items-center"><input type="checkbox" name="hasInternet" checked={formData.hasInternet} onChange={handleChange} className="h-4 w-4 rounded" /> <span className="ml-2">Connexion Internet</span></label>
+            </div>
+            <textarea name="specificEquipment" value={formData.specificEquipment} onChange={handleChange} placeholder="Matériel spécifique (ex: Oscilloscope...)" className="w-full p-2 border rounded-md mt-2" rows="3" />
           </div>
           <div className="col-span-1 md:col-span-2 mt-6 flex justify-end space-x-4">
-            <button type="button" onClick={onClose} className="px-4 py-2 bg-gray-300 rounded">Annuler</button>
-            <button type="submit" className="px-4 py-2 bg-blue-600 text-white rounded">Sauvegarder</button>
+            <button type="button" onClick={onClose} className="px-6 py-2 bg-gray-200 rounded-md hover:bg-gray-300">Annuler</button>
+            <button type="submit" className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">Sauvegarder</button>
           </div>
         </form>
       </div>
@@ -92,20 +92,39 @@ const RoomFormModal = ({ room, onClose, onSave, campuses }) => { // Ajout de cam
 
 const ConfirmDeleteModal = ({ onClose, onConfirm }) => (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-      <div className="bg-white p-6 rounded-lg w-full max-w-sm">
+      <div className="bg-white p-6 rounded-lg w-full max-w-sm shadow-xl">
         <h2 className="text-xl font-bold mb-4">Confirmer la suppression</h2>
         <p>Êtes-vous sûr de vouloir supprimer cette salle ?</p>
         <div className="mt-6 flex justify-end space-x-4">
-          <button type="button" onClick={onClose} className="px-4 py-2 bg-gray-300 rounded">Annuler</button>
-          <button type="button" onClick={onConfirm} className="px-4 py-2 bg-red-600 text-white rounded">Supprimer</button>
+          <button type="button" onClick={onClose} className="px-4 py-2 bg-gray-200 rounded-md hover:bg-gray-300">Annuler</button>
+          <button type="button" onClick={onConfirm} className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700">Supprimer</button>
         </div>
       </div>
     </div>
 );
 
+const StatusIndicator = ({ status }) => {
+  const statusStyles = {
+    AVAILABLE: 'bg-green-100 text-green-800',
+    OCCUPIED: 'bg-yellow-100 text-yellow-800',
+    MAINTENANCE: 'bg-purple-100 text-purple-800',
+    OUT_OF_SERVICE: 'bg-red-100 text-red-800',
+  };
+  return <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${statusStyles[status] || 'bg-gray-100 text-gray-800'}`}>{status}</span>;
+};
+
+const EquipmentIcons = ({ room }) => (
+    <div className="flex items-center space-x-3 text-gray-600">
+        {room.hasProjector && <div title="Vidéoprojecteur"><FaVideo /></div>}
+        {room.hasComputers && <div title="Ordinateurs"><FaDesktop /></div>}
+        {room.hasInteractiveBoard && <div title="Tableau Interactif"><FaChalkboardTeacher /></div>}
+        {room.hasInternet && <div title="Internet"><FaWifi /></div>}
+    </div>
+);
+
 const RoomsPage = () => {
   const [rooms, setRooms] = useState<Room[]>([])
-  const [campuses, setCampuses] = useState<{ id: string, name: string }[]>([]); // State pour les campus
+  const [campuses, setCampuses] = useState<{ id: string, name: string }[]>([]);
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [isFormModalOpen, setIsFormModalOpen] = useState(false);
@@ -128,14 +147,12 @@ const RoomsPage = () => {
         fetch(`${API_URL}/campuses`, { headers: { 'Authorization': `Bearer ${token}` } })
       ]);
 
-      if (roomsRes.status === 401 || campusesRes.status === 401) { navigate('/auth/login'); return; }
+      if (roomsRes.status === 401) { navigate('/auth/login'); return; }
       if (!roomsRes.ok) throw new Error('Failed to fetch rooms.');
       if (!campusesRes.ok) throw new Error('Failed to fetch campuses.');
       
-      const roomsData = await roomsRes.json();
-      const campusesData = await campusesRes.json();
-      setRooms(roomsData);
-      setCampuses(campusesData);
+      setRooms(await roomsRes.json());
+      setCampuses(await campusesRes.json());
     } catch (err: any) {
       setError(err.message);
     } finally {
@@ -185,15 +202,10 @@ const RoomsPage = () => {
     if (!roomToDelete) return;
     try {
       const token = getAuthToken();
-      if (!token) { navigate('/auth/login'); return; }
-
-      const response = await fetch(`${API_URL}/rooms/${roomToDelete}`, {
+      await fetch(`${API_URL}/rooms/${roomToDelete}`, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${token}` },
       });
-      if (response.status === 401) { navigate('/auth/login'); return; }
-      if (!response.ok) throw new Error('Failed to delete room.');
-      
       await fetchData();
       setIsConfirmModalOpen(false);
       setRoomToDelete(null);
@@ -206,11 +218,12 @@ const RoomsPage = () => {
   if (error) return <div className="p-6 text-red-600">Error: {error}</div>;
 
   return (
-    <div className="p-6">
-      <div className="flex justify-between items-center mb-4">
-        <h1 className="text-2xl font-bold">Gestion des Salles</h1>
+    <div className="p-6 bg-gray-50 min-h-screen">
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-3xl font-bold text-gray-800">Gestion des Salles</h1>
         {isAdmin && (
-          <button onClick={() => { setSelectedRoom(null); setIsFormModalOpen(true); }} className="px-4 py-2 bg-blue-600 text-white rounded-lg">
+          <button onClick={() => { setSelectedRoom(null); setIsFormModalOpen(true); }} className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 transition-colors">
+            <FaPlus className="mr-2" />
             Ajouter une Salle
           </button>
         )}
@@ -232,30 +245,32 @@ const RoomsPage = () => {
         />
       )}
 
-      <div className="overflow-x-auto bg-white rounded-lg shadow">
+      <div className="bg-white rounded-lg shadow overflow-hidden">
         <table className="min-w-full">
-          <thead className="bg-gray-50">
+          <thead className="bg-gray-100 border-b border-gray-200">
             <tr>
-              <th className="py-3 px-6 text-left">Nom</th>
-              <th className="py-3 px-6 text-left">Campus</th>
-              <th className="py-3 px-6 text-left">Type</th>
-              <th className="py-3 px-6 text-left">Capacité</th>
-              <th className="py-3 px-6 text-left">Statut</th>
-              {isAdmin && <th className="py-3 px-6 text-center">Actions</th>}
+              <th className="py-3 px-6 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nom</th>
+              <th className="py-3 px-6 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Campus</th>
+              <th className="py-3 px-6 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
+              <th className="py-3 px-6 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Capacité</th>
+              <th className="py-3 px-6 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Équipements</th>
+              <th className="py-3 px-6 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Statut</th>
+              {isAdmin && <th className="py-3 px-6 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>}
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200">
             {rooms.map((room) => (
-              <tr key={room.id} className="hover:bg-gray-50">
-                <td className="py-4 px-6">{room.name}</td>
-                <td className="py-4 px-6">{room.campus || 'N/A'}</td>
-                <td className="py-4 px-6">{room.type || 'N/A'}</td>
-                <td className="py-4 px-6">{room.capacity}</td>
-                <td className="py-4 px-6">{room.status || 'N/A'}</td>
+              <tr key={room.id} className="hover:bg-gray-50 transition-colors">
+                <td className="py-4 px-6 whitespace-nowrap">{room.name}</td>
+                <td className="py-4 px-6 whitespace-nowrap">{room.campus || 'N/A'}</td>
+                <td className="py-4 px-6 whitespace-nowrap">{room.type || 'N/A'}</td>
+                <td className="py-4 px-6 whitespace-nowrap">{room.capacity}</td>
+                <td className="py-4 px-6 whitespace-nowrap"><EquipmentIcons room={room} /></td>
+                <td className="py-4 px-6 whitespace-nowrap"><StatusIndicator status={room.status} /></td>
                 {isAdmin && (
-                  <td className="py-4 px-6 text-center space-x-2">
-                    <button onClick={() => { setSelectedRoom(room); setIsFormModalOpen(true); }} className="text-blue-600 hover:text-blue-800">Modifier</button>
-                    <button onClick={() => handleDeleteClick(room.id)} className="text-red-600 hover:text-red-800">Supprimer</button>
+                  <td className="py-4 px-6 text-center whitespace-nowrap">
+                    <button onClick={() => { setSelectedRoom(room); setIsFormModalOpen(true); }} className="text-blue-600 hover:text-blue-800 mr-4"><FaEdit /></button>
+                    <button onClick={() => handleDeleteClick(room.id)} className="text-red-600 hover:text-red-800"><FaTrash /></button>
                   </td>
                 )}
               </tr>
